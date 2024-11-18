@@ -18,8 +18,10 @@ public class Label {
     private Long id;
 
     @NotBlank(message = "Name is required")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

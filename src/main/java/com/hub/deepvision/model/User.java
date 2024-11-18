@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,16 +21,24 @@ public class User {
     private Long id;
 
     @NotBlank(message = "Name is required")
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Email(message = "Invalid email format")
-    @Column(name = "email")
+    @NotBlank(message = "Email is required")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "profile_picture")
     private String fileUrl;
 
-    @Column(name = "password")
+    @NotBlank(message = "Password is required")
+    @Column(name = "password", nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Label> labels;
 }
