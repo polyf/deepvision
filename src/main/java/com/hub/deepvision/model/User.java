@@ -32,7 +32,7 @@ public class User {
     private String email;
 
     @Column(name = "profile_picture")
-    private String fileUrl;
+    private String profilePicture;
 
     @NotBlank(message = "Password is required")
     @Column(name = "password", nullable = false)

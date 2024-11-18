@@ -5,7 +5,6 @@ import com.hub.deepvision.service.LabelService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +15,7 @@ public class LabelController {
 
     @Autowired
     private LabelService labelService;
+
     @Autowired
     private ModelMapper modelMapper;
 

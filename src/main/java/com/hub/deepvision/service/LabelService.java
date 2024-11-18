@@ -14,10 +14,9 @@ import java.util.List;
 @Service
 public class LabelService {
 
-
-
     @Autowired
     private final LabelRepository labelRepository;
+
     @Autowired
     private ModelMapper modelMapper;
 

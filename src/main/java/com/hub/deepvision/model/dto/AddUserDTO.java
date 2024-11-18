@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LabelDTO {
-    private Long id;
+public class AddUserDTO {
     private String name;
-    private Long userId;
+    private String profilePicture;
+    private String email;
+    private String password;
 }
