@@ -1,6 +1,8 @@
 package com.hub.deepvision.service;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.hub.deepvision.model.User;
+import com.hub.deepvision.model.dto.AddImageDTO;
 import com.hub.deepvision.model.dto.AddUserDTO;
 import com.hub.deepvision.model.dto.UpdateUserDTO;
 import com.hub.deepvision.model.dto.UserDTO;
@@ -8,6 +10,7 @@ import com.hub.deepvision.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,8 @@ import java.util.List;
 
 @Service
 public class UserService {
+    @Autowired
+    private final BucketService bucketService;
 
     @Autowired
     private final UserRepository userRepository;
@@ -24,8 +29,9 @@ public class UserService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, BucketService bucketService) {
         this.userRepository = userRepository;
+        this.bucketService = bucketService;
     }
 
     public User createUser(AddUserDTO user) {
@@ -53,11 +59,15 @@ public class UserService {
         return ResponseEntity.ok("User updated successfully");
     }
 
-    public ResponseEntity<String> updateProfilePicture(Long id, MultipartFile user) {
+    public ResponseEntity<String> updateProfilePicture(Long id, MultipartFile file) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with this id"));
-
-        // Implementação do bucket de imagens de perfil
+        String profilePictureUrl = bucketService.uploadImage(AddImageDTO.builder()
+                        .file(file)
+                        .fileName(file.getOriginalFilename())
+                .build());
+        existingUser.setProfilePicture(profilePictureUrl);
+        userRepository.save(existingUser);
         return ResponseEntity.ok("User updated successfully");
     }
 }

@@ -10,25 +10,13 @@ import com.hub.deepvision.repository.LabelRepository;
 import com.hub.deepvision.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 @Service
 public class ImageService {
-
-    @Value("${aws.bucket.name}")
-    private String bucketName;
-
     @Autowired
-    private AmazonS3 S3Client;
+    private final BucketService bucketService;
 
     @Autowired
     private final ImageRepository imageRepository;
@@ -41,14 +29,15 @@ public class ImageService {
 
     private static final Long userId = 7L;
 
-    public ImageService(ImageRepository imageRepository, UserRepository userRepository, LabelRepository labelRepository) {
+    public ImageService(BucketService bucketService, ImageRepository imageRepository, UserRepository userRepository, LabelRepository labelRepository) {
+        this.bucketService = bucketService;
         this.imageRepository = imageRepository;
         this.userRepository = userRepository;
         this.labelRepository = labelRepository;
     }
 
     public Image upload(AddImageDTO addImageDTO) {
-        String imageUrl = uploadImage(addImageDTO);
+        String imageUrl = bucketService.uploadImage(addImageDTO);
         Image image = setObjectImageData(addImageDTO, imageUrl);
         List<Label> relatedLabels = addImageDTO.getLabels().stream()
                 .map(labelId -> labelRepository.findById(labelId)
@@ -68,27 +57,6 @@ public class ImageService {
                 .fileUrl(imageUrl)
                 .user(userRepository.getReferenceById(userId))
                 .build();
-    }
-
-    private String uploadImage(AddImageDTO addImageDTO) {
-        String fileName = UUID.randomUUID() + "-" + addImageDTO.getFileName();
-        try {
-            File file = this.convertMultipartToFile(addImageDTO);
-            S3Client.putObject(bucketName, fileName, file);
-            file.delete();
-            return S3Client.getUrl(bucketName, fileName).toString();
-        } catch (Exception ex) {
-            System.out.println("Erro ao subir arquivo");
-            return null;
-        }
-    }
-
-    private File convertMultipartToFile(AddImageDTO addImageDTO) throws IOException {
-        File file = new File(Objects.requireNonNull(addImageDTO.getFileName()));
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        fileOutputStream.write(addImageDTO.getFile().getBytes());
-        fileOutputStream.close();
-        return file;
     }
 
     public List<Image> getImagesByLabel(Long labelId) {
