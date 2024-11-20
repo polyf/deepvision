@@ -2,13 +2,16 @@ package com.hub.deepvision.service;
 
 import com.hub.deepvision.model.User;
 import com.hub.deepvision.model.dto.AddUserDTO;
+import com.hub.deepvision.model.dto.UpdateUserDTO;
 import com.hub.deepvision.model.dto.UserDTO;
 import com.hub.deepvision.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -42,13 +45,19 @@ public class UserService {
     }
 
 
-    public User updateUserById(Long id, UserDTO user) {
+    public ResponseEntity<String> updateUserById(Long id, UpdateUserDTO user) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with this id"));
+        existingUser.setName(user.getName());
+        userRepository.save(existingUser);
+        return ResponseEntity.ok("User updated successfully");
+    }
+
+    public ResponseEntity<String> updateProfilePicture(Long id, MultipartFile user) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with this id"));
 
-        existingUser.setName(user.getName());
-        existingUser.setProfilePicture(user.getProfilePicture());
-
-        return userRepository.save(existingUser);
+        // Implementação do bucket de imagens de perfil
+        return ResponseEntity.ok("User updated successfully");
     }
 }

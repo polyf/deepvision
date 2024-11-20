@@ -1,8 +1,10 @@
 package com.hub.deepvision.service;
 
 import com.hub.deepvision.model.Label;
+import com.hub.deepvision.model.User;
 import com.hub.deepvision.model.dto.LabelDTO;
 import com.hub.deepvision.repository.LabelRepository;
+import com.hub.deepvision.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +20,22 @@ public class LabelService {
     private final LabelRepository labelRepository;
 
     @Autowired
+    private final UserRepository userRepository;
+
+
+    @Autowired
     private ModelMapper modelMapper;
 
-    public LabelService(LabelRepository labelRepository) {
+    public LabelService(LabelRepository labelRepository, UserRepository userRepository) {
         this.labelRepository = labelRepository;
+        this.userRepository = userRepository;
     }
 
     public Label createLabel(LabelDTO label) {
         if (labelRepository.existsByName(label.getName())) {
             throw new DuplicateKeyException("Label with this name already exists");
         }
+        label.setUserId(label.getUserId());
         return labelRepository.save(modelMapper.map(label, Label.class));
     }
 

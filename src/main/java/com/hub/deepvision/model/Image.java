@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,4 +39,7 @@ public class Image {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToMany(mappedBy = "images")
+    private List<Label> labels = new ArrayList<>();
 }
+

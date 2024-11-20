@@ -54,5 +54,4 @@ public class LabelController {
                 modelMapper.map(labelService.updateLabelById(id, label), LabelDTO.class)
         );
     }
-
 }

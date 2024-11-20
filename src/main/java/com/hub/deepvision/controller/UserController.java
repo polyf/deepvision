@@ -2,12 +2,14 @@ package com.hub.deepvision.controller;
 
 import com.hub.deepvision.model.dto.AddUserDTO;
 import com.hub.deepvision.model.dto.LabelDTO;
+import com.hub.deepvision.model.dto.UpdateUserDTO;
 import com.hub.deepvision.model.dto.UserDTO;
 import com.hub.deepvision.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -45,9 +47,12 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> editUser(@PathVariable Long id, @RequestBody UserDTO user) {
-        return ResponseEntity.ok(
-                modelMapper.map(userService.updateUserById(id, user), UserDTO.class)
-        );
+    public ResponseEntity<String> editUser(@PathVariable Long id, @RequestBody UpdateUserDTO user) {
+        return userService.updateUserById(id, user);
+    }
+
+    @PutMapping("/{id}/profile-picture")
+    public ResponseEntity<String> editProfilePictureImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        return userService.updateProfilePicture(id, file);
     }
 }
