@@ -34,17 +34,6 @@ public class UserService {
         this.bucketService = bucketService;
     }
 
-    public User createUser(AddUserDTO user) {
-        if (userRepository.existsByName(user.getEmail())) {
-            throw new DuplicateKeyException("User with this email already exists");
-        }
-        return userRepository.save(modelMapper.map(user, User.class));
-    }
-
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with this id"));

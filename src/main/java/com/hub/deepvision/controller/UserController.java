@@ -23,22 +23,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
-    public ResponseEntity<UserDTO> addUser(@RequestBody AddUserDTO user) {
-        return ResponseEntity.ok(
-                modelMapper.map(userService.createUser(user), UserDTO.class)
-        );
-    }
-
-    @GetMapping
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-        return ResponseEntity.ok(
-                userService.getAllUsers().stream()
-                        .map(user -> modelMapper.map(user, UserDTO.class))
-                        .toList()
-        );
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(
